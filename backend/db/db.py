@@ -259,6 +259,20 @@ def db_get_comments_by_snippet_id(conn, snippet_id):
         print(f"Error fetching comments: {e}")
         return []
 
+def db_get_all_comments(conn):
+    try:
+        with conn.cursor() as cursor:
+            select_query = sql.SQL("""
+                SELECT id, snippet_id, user_name, content, created_at
+                FROM comments
+            """)
+            cursor.execute(select_query)
+            comments_data = cursor.fetchall()
+            return [Comment(*comment) for comment in comments_data]
+    except Exception as e:
+        print(f"Error fetching comments: {e}")
+        return []
+
 def db_insert_project(conn, project):
     try:
         with conn.cursor() as cursor:
@@ -305,6 +319,40 @@ def db_delete_project(conn, project_id):
     except Exception as e:
         print(f"Error deleting project: {e}")
         conn.rollback()
+
+def db_get_all_projects(conn):
+    try:
+        with conn.cursor() as cursor:
+            select_query = sql.SQL("""
+                SELECT id, name, description
+                FROM projects
+            """)
+            cursor.execute(select_query)
+            projects_data = cursor.fetchall()
+            return [Project(*project) for project in projects_data]
+    except Exception as e:
+        print(f"Error fetching projects: {e}")
+        return []
+
+def db_get_project_by_id(conn, project_id):
+    try:
+        with conn.cursor() as cursor:
+            select_query = sql.SQL("""
+                SELECT id, name, description
+                FROM projects
+                WHERE id = %s
+            """)
+            cursor.execute(select_query, (project_id,))
+            project_data = cursor.fetchone()
+            if project_data:
+                project = Project(*project_data)
+                return project
+            else:
+                print("Project not found")
+                return None
+    except Exception as e:
+        print(f"Error fetching project: {e}")
+        return None
 
 def db_insert_user_project(conn, user_project):
     try:

@@ -1,7 +1,7 @@
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from db.db import db_connect, db_insert_user, db_update_user, db_delete_user, db_get_user_by_username, db_insert_snippet, db_update_snippet, db_delete_snippet, db_get_snippet_by_id, db_filter_snippets, db_insert_comment, User, Comment, Snippet
+from db.db import db_connect, db_insert_user, db_insert_snippet, db_insert_comment, db_insert_project, db_insert_user_project, User, Comment, Snippet, Project, UserProject
 import datetime
 
 def generate_test_data():
@@ -32,21 +32,21 @@ def generate_test_data():
         db_insert_comment(conn, comment)
 
     # Create projects
-    # projects = [
-    #     Project(None, 'Project One', 'A sample project'),
-    #     Project(None, 'Project Two', 'Another sample project'),
-    # ]
-    # for project in projects:
-    #     db_insert_project(conn, project)
+    projects = [
+        Project(None, 'Project One', 'A sample project'),
+        Project(None, 'Project Two', 'Another sample project'),
+    ]
+    for project in projects:
+        db_insert_project(conn, project)
 
-    # # Create project members
-    # project_members = [
-    #     ProjectMember(1, 'johndoe'),
-    #     ProjectMember(1, 'janedoe'),
-    #     ProjectMember(2, 'johndoe'),
-    # ]
-    # for project_member in project_members:
-    #     db_insert_project_member(conn, project_member)
+    # Create project members
+    project_members = [
+        UserProject('johndoe', 1),
+        UserProject('janedoe', 1),
+        UserProject('johndoe', 2),
+    ]
+    for project_member in project_members:
+        db_insert_user_project(conn, project_member)
 
     conn.close()
 
