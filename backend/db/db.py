@@ -204,4 +204,48 @@ def db_insert_comment(conn, comment):
         conn.rollback()
         return None
 
+def db_update_comment(conn, comment):
+    try:
+        with conn.cursor() as cursor:
+            update_query = sql.SQL("""
+                UPDATE comments
+                SET content = %s, created_at = %s
+                WHERE id = %s
+            """)
+            cursor.execute(update_query, (comment.content, comment.created_at, comment.id))
+            conn.commit()
+            print("Comment updated successfully")
+    except Exception as e:
+        print(f"Error updating comment: {e}")
+        conn.rollback()
+
+def db_delete_comment(conn, comment_id):
+    try:
+        with conn.cursor() as cursor:
+            delete_query = sql.SQL("""
+                DELETE FROM comments
+                WHERE id = %s
+            """)
+            cursor.execute(delete_query, (comment_id,))
+            conn.commit()
+            print("Comment deleted successfully")
+    except Exception as e:
+        print(f"Error deleting comment: {e}")
+        conn.rollback()
+
+def db_get_comments_by_snippet_id(conn, snippet_id):
+    try:
+        with conn.cursor() as cursor:
+            select_query = sql.SQL("""
+                SELECT id, snippet_id, user_name, content, created_at
+                FROM comments
+                WHERE snippet_id = %s
+            """)
+            cursor.execute(select_query, (snippet_id,))
+            comments_data = cursor.fetchall()
+            return [Comment(*comment) for comment in comments_data]
+    except Exception as e:
+        print(f"Error fetching comments: {e}")
+        return []
+
 
