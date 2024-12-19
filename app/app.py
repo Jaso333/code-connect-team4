@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-from flask import Flask, request, jsonify, send_from_directory
-=======
 from flask import Flask, request, jsonify
->>>>>>> 95771d909f08550bf54fee6b709f3bff2eeba96f
 
 app = Flask(__name__)
 
