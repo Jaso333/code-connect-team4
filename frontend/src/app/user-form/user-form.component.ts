@@ -1,8 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 export interface UserData {
   id: number;
@@ -24,10 +25,9 @@ export interface UserData {
   styleUrls: ['./user-form.component.css']
 })
 export class UserFormComponent implements OnInit {
-  @Input() userData: UserData | null = null;
   userForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, @Inject(MAT_DIALOG_DATA) public userData: UserData | null = null, public dialogRef: MatDialogRef<UserFormComponent>) {
     this.userForm = this.fb.group({
       username: ['', Validators.required],
       name: ['', Validators.required],
@@ -46,7 +46,7 @@ export class UserFormComponent implements OnInit {
 
   onSubmit() {
     if (this.userForm.valid) {
-      console.log(this.userForm.value);
+      this.dialogRef.close(this.userForm.value);
     }
   }
 }
