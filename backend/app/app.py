@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS  # Import CORS
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from db.db import db_connect, db_insert_user, db_update_user, db_delete_user, db_get_user_by_username, db_insert_snippet, db_update_snippet, db_delete_snippet, db_get_snippet_by_id, db_filter_snippets, db_insert_comment, User, Comment, Snippet
 app = Flask(__name__)
+CORS(app)  # Enable CORS
 
 users = {}
 snippets = {}
