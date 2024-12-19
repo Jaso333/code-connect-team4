@@ -45,4 +45,5 @@ jobs:
         docker compose up -d
     - name: Run functional tests after app is started
       run: |
-        pytest tests/functional_tests.py
+        sleep 10
+        pytest tests/functional_tests.py --base-url http://localhost:8000
