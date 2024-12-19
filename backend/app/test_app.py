@@ -3,7 +3,7 @@ from app import app
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from db.db import db_connect, db_insert_user, db_update_user, db_delete_user, db_get_user_by_username, db_insert_snippet, db_update_snippet, db_delete_snippet, db_get_snippet_by_id, db_filter_snippets, db_insert_comment, User, Comment, Snippet
+from db.db import db_connect, db_insert_user, db_update_user, db_delete_user, db_get_user_by_username, db_insert_snippet, db_update_snippet, db_delete_snippet, db_get_snippet_by_id, db_filter_snippets, db_insert_comment, db_insert_project, User, Comment, Snippet, Project, UserProject
 
 @pytest.fixture
 def client():
@@ -136,35 +136,34 @@ def test_get_comments(client):
     assert response.status_code == 200
     assert isinstance(response.json, list)
 
-# def test_create_project(client):
-#     response = client.post('/projects', json={
-#         'id': 'project1',
-#         'name': 'Project One',
-#         'description': 'A sample project'
-#     })
-#     assert response.status_code == 201
-#     assert response.json['name'] == 'Project One'
+def test_create_project(client):
+    response = client.post('/projects', json={
+        'name': 'Project One',
+        'description': 'A sample project'
+    })
+    assert response.status_code == 201
+    assert response.json['name'] == 'Project One'
 
-# def test_get_project(client):
-#     conn = db_connect()
-#     project = Project('project1', 'Project One', 'A sample project')
-#     db_insert_project(conn, project)
-#     response = client.get('/projects/project1')
-#     assert response.status_code == 200
-#     assert response.json['name'] == 'Project One'
+def test_get_project(client):
+    conn = db_connect()
+    project = Project(None, 'Project One', 'A sample project')
+    project_id = db_insert_project(conn, project)
+    response = client.get(f'/projects/{project_id}')
+    assert response.status_code == 200
+    assert response.json['name'] == 'Project One'
 
-# def test_update_project(client):
-#     conn = db_connect()
-#     project = Project('project1', 'Project One', 'A sample project')
-#     db_insert_project(conn, project)
-#     response = client.put('/projects/project1', json={'name': 'Updated Project One'})
-#     assert response.status_code == 200
-#     assert response.json['name'] == 'Updated Project One'
+def test_update_project(client):
+    conn = db_connect()
+    project = Project(None, 'Project One', 'A sample project')
+    project_id = db_insert_project(conn, project)
+    response = client.put(f'/projects/{project_id}', json={'name': 'Updated Project One'})
+    assert response.status_code == 200
+    assert response.json['name'] == 'Updated Project One'
 
-# def test_add_project_member(client):
-#     conn = db_connect()
-#     project = Project('project1', 'Project One', 'A sample project')
-#     db_insert_project(conn, project)
-#     response = client.post('/projects/project1/members', json={'id': 'member1'})
-#     assert response.status_code == 201
-#     assert 'member1' in response.json['user_id']
+def test_add_project_member(client):
+    conn = db_connect()
+    project = Project(None, 'Project One', 'A sample project')
+    project_id = db_insert_project(conn, project)
+    response = client.post(f'/projects/{project_id}/members', json={'user_name': 'johndoe'})
+    assert response.status_code == 201
+    assert response.json['user_name'] == 'johndoe'
