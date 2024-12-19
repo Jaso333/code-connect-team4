@@ -27,6 +27,17 @@ class Comment:
         self.content = content
         self.created_at = created_at
 
+class Project:
+    def __init__(self, id, name, description):
+        self.id = id
+        self.name = name
+        self.description = description
+
+class UserProject:
+    def __init__(self, user_name, project_id):
+        self.user_name = user_name
+        self.project_id = project_id
+
 def db_connect():
     return psycopg2.connect(database="team4",
         host="ghcpchmgmt.postgres.database.azure.com",
@@ -248,4 +259,95 @@ def db_get_comments_by_snippet_id(conn, snippet_id):
         print(f"Error fetching comments: {e}")
         return []
 
+def db_insert_project(conn, project):
+    try:
+        with conn.cursor() as cursor:
+            insert_query = sql.SQL("""
+                INSERT INTO projects (name, description)
+                VALUES (%s, %s)
+                RETURNING id
+            """)
+            cursor.execute(insert_query, (project.name, project.description))
+            project_id = cursor.fetchone()[0]
+            conn.commit()
+            print(f"Project inserted successfully with ID: {project_id}")
+            return project_id
+    except Exception as e:
+        print(f"Error inserting project: {e}")
+        conn.rollback()
+        return None
 
+def db_update_project(conn, project):
+    try:
+        with conn.cursor() as cursor:
+            update_query = sql.SQL("""
+                UPDATE projects
+                SET name = %s, description = %s
+                WHERE id = %s
+            """)
+            cursor.execute(update_query, (project.name, project.description, project.id))
+            conn.commit()
+            print("Project updated successfully")
+    except Exception as e:
+        print(f"Error updating project: {e}")
+        conn.rollback()
+
+def db_delete_project(conn, project_id):
+    try:
+        with conn.cursor() as cursor:
+            delete_query = sql.SQL("""
+                DELETE FROM projects
+                WHERE id = %s
+            """)
+            cursor.execute(delete_query, (project_id,))
+            conn.commit()
+            print("Project deleted successfully")
+    except Exception as e:
+        print(f"Error deleting project: {e}")
+        conn.rollback()
+
+def db_insert_user_project(conn, user_project):
+    try:
+        with conn.cursor() as cursor:
+            insert_query = sql.SQL("""
+                INSERT INTO user_projects (user_name, project_id)
+                VALUES (%s, %s)
+                RETURNING user_name, project_id
+            """)
+            cursor.execute(insert_query, (user_project.user_name, user_project.project_id))
+            conn.commit()
+            print("UserProject inserted successfully")
+            return user_project
+    except Exception as e:
+        print(f"Error inserting UserProject: {e}")
+        conn.rollback()
+        return None
+
+def db_delete_user_project(conn, user_name, project_id):
+    try:
+        with conn.cursor() as cursor:
+            delete_query = sql.SQL("""
+                DELETE FROM user_projects
+                WHERE user_name = %s AND project_id = %s
+            """)
+            cursor.execute(delete_query, (user_name, project_id))
+            conn.commit()
+            print("UserProject deleted successfully")
+    except Exception as e:
+        print(f"Error deleting UserProject: {e}")
+        conn.rollback()
+
+def db_get_user_projects_by_project_id(conn, project_id):
+    try:
+        with conn.cursor() as cursor:
+            select_query = sql.SQL("""
+                SELECT user_name, project_id
+                FROM user_projects
+                WHERE project_id = %s
+            """)
+            cursor.execute(select_query, (project_id,))
+            user_projects_data = cursor.fetchall()
+            return [UserProject(*user_project) for user_project in user_projects_data]
+    except Exception as e:
+        print(f"Error fetching UserProjects: {e}")
+        return []

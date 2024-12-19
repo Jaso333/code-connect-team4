@@ -1,6 +1,11 @@
 from flask import Flask, request, jsonify
-
+from flask_cors import CORS  # Import CORS
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from db.db import db_connect, db_insert_user, db_update_user, db_delete_user, db_get_user_by_username, db_insert_snippet, db_update_snippet, db_delete_snippet, db_get_snippet_by_id, db_filter_snippets, db_insert_comment, User, Comment, Snippet
 app = Flask(__name__)
+CORS(app)  # Enable CORS
 
 users = {}
 snippets = {}
@@ -9,106 +14,127 @@ projects = {}
 
 @app.route('/users', methods=['POST'])
 def create_user():
-    user_id = int(request.json.get('id'))
-    user_data = {
-        'name': request.json.get('name'),
-        'bio': request.json.get('bio'),
-        'skills': request.json.get('skills'),
-        'profile_picture': request.json.get('profile_picture'),
-        'github_gitlab': request.json.get('github_gitlab')
-    }
-    users[user_id] = user_data
-    return jsonify(user_data), 201
+    conn = db_connect()
+    user = User(
+        username=request.json.get('username'),
+        email=request.json.get('email'),
+        password=request.json.get('password'),
+        first_name=request.json.get('first_name'),
+        surname=request.json.get('surname'),
+        bio=request.json.get('bio'),
+        skills=request.json.get('skills')
+    )
+    db_insert_user(conn, user)
+    return jsonify({'username': user.username, 'email': user.email, 'first_name': user.first_name, 'surname': user.surname, 'bio': user.bio, 'skills': user.skills}), 201
 
 @app.route('/users', methods=['GET'])
 def get_all_users():
-    return jsonify(users)
+    conn = db_connect()
+    cursor = conn.cursor()
+    cursor.execute("SELECT username, email, password, first_name, surname, bio, skills FROM users")
+    users = cursor.fetchall()
+    return jsonify([{'username': user[0], 'email': user[1], 'first_name': user[3], 'surname': user[4], 'bio': user[5], 'skills': user[6]} for user in users])
 
-@app.route('/users/<int:user_id>', methods=['GET'])
-def get_user(user_id):
-    user_data = users.get(user_id)
-    if user_data:
-        return jsonify(user_data)
+@app.route('/users/<username>', methods=['GET'])
+def get_user(username):
+    conn = db_connect()
+    user = db_get_user_by_username(conn, username)
+    if user:
+        return jsonify({'username': user.username, 'email': user.email, 'first_name': user.first_name, 'surname': user.surname, 'bio': user.bio, 'skills': user.skills})
     else:
         return jsonify({'error': 'User not found'}), 404
 
-@app.route('/users/<int:user_id>', methods=['PUT'])
-def update_user(user_id):
-    if user_id in users:
-        user_data = users[user_id]
-        user_data.update({
-            'name': request.json.get('name', user_data['name']),
-            'bio': request.json.get('bio', user_data['bio']),
-            'skills': request.json.get('skills', user_data['skills']),
-            'profile_picture': request.json.get('profile_picture', user_data['profile_picture']),
-            'github_gitlab': request.json.get('github_gitlab', user_data['github_gitlab'])
-        })
-        return jsonify(user_data)
+@app.route('/users/<username>', methods=['PUT'])
+def update_user(username):
+    conn = db_connect()
+    user = db_get_user_by_username(conn, username)
+    if user:
+        user.email = request.json.get('email', user.email)
+        user.password = request.json.get('password', user.password)
+        user.first_name = request.json.get('first_name', user.first_name)
+        user.surname = request.json.get('surname', user.surname)
+        user.bio = request.json.get('bio', user.bio)
+        user.skills = request.json.get('skills', user.skills)
+        db_update_user(conn, user)
+        return jsonify({'username': user.username, 'email': user.email, 'first_name': user.first_name, 'surname': user.surname, 'bio': user.bio, 'skills': user.skills})
     else:
         return jsonify({'error': 'User not found'}), 404
 
-@app.route('/example_user', methods=['GET'])
-def create_example_user():
-    example_user = {
-        'id': 1,
-        'name': 'John Doe',
-        'bio': 'A software developer with 10 years of experience.',
-        'skills': ['Python', 'Flask', 'JavaScript'],
-        'profile_picture': 'http://example.com/profile.jpg',
-        'github_gitlab': 'http://github.com/johndoe'
-    }
-    users[example_user['id']] = example_user
-    return jsonify(example_user), 201
+@app.route('/users/<username>', methods=['DELETE'])
+def delete_user(username):
+    conn = db_connect()
+    db_delete_user(conn, username)
+    return jsonify({'message': 'User deleted'}), 200
 
 @app.route('/snippets', methods=['POST'])
 def create_snippet():
-    snippet_id = request.json.get('id')
-    snippet_data = request.json
-    snippets[snippet_id] = snippet_data
-    return jsonify(snippet_data), 201
+    conn = db_connect()
+    snippet = Snippet(
+        id=None,  # ID will be generated by the database
+        code=request.json.get('content'),
+        tags=request.json.get('tags'),
+        language=request.json.get('language'),
+        user_name=request.json.get('user_name')
+    )
+    snippet_id = db_insert_snippet(conn, snippet)
+    if snippet_id:
+        return jsonify({'id': snippet_id, 'content': snippet.code, 'tags': snippet.tags, 'language': snippet.language, 'user_name': snippet.user_name}), 201
+    else:
+        return jsonify({'error': 'Failed to create snippet'}), 500
 
 @app.route('/snippets/<snippet_id>', methods=['GET'])
 def get_snippet(snippet_id):
-    snippet_data = snippets.get(snippet_id)
-    if snippet_data:
-        return jsonify(snippet_data)
+    conn = db_connect()
+    snippet = db_get_snippet_by_id(conn, snippet_id)
+    if snippet:
+        return jsonify({'id': snippet.id, 'content': snippet.code, 'tags': snippet.tags, 'language': snippet.language, 'user_name': snippet.user_name})
     else:
         return jsonify({'error': 'Snippet not found'}), 404
 
 @app.route('/snippets/<snippet_id>', methods=['PUT'])
 def update_snippet(snippet_id):
-    if snippet_id in snippets:
-        snippets[snippet_id].update(request.json)
-        return jsonify(snippets[snippet_id])
+    conn = db_connect()
+    snippet = db_get_snippet_by_id(conn, snippet_id)
+    if snippet:
+        snippet.code = request.json.get('content', snippet.code)
+        snippet.tags = request.json.get('tags', snippet.tags)
+        snippet.language = request.json.get('language', snippet.language)
+        snippet.user_name = request.json.get('user_name', snippet.user_name)
+        db_update_snippet(conn, snippet)
+        return jsonify({'id': snippet.id, 'content': snippet.code, 'tags': snippet.tags, 'language': snippet.language, 'user_name': snippet.user_name})
     else:
         return jsonify({'error': 'Snippet not found'}), 404
 
 @app.route('/snippets/<snippet_id>', methods=['DELETE'])
 def delete_snippet(snippet_id):
-    if snippet_id in snippets:
-        del snippets[snippet_id]
-        return jsonify({'message': 'Snippet deleted'}), 200
-    else:
-        return jsonify({'error': 'Snippet not found'}), 404
+    conn = db_connect()
+    db_delete_snippet(conn, snippet_id)
+    return jsonify({'message': 'Snippet deleted'}), 200
 
 @app.route('/snippets', methods=['GET'])
 def search_snippets():
-    user = request.args.get('user')
+    conn = db_connect()
+    user_name = request.args.get('user')
     tag = request.args.get('tag')
     language = request.args.get('language')
-    filtered_snippets = [snippet for snippet in snippets.values() if
-                         (not user or snippet.get('user') == user) and
-                         (not tag or tag in snippet.get('tags', [])) and
-                         (not language or snippet.get('language') == language)]
-    return jsonify(filtered_snippets)
+    snippets = db_filter_snippets(conn, user_name=user_name, tag=tag, language=language)
+    return jsonify([{'id': snippet.id, 'content': snippet.code, 'tags': snippet.tags, 'language': snippet.language, 'user_name': snippet.user_name} for snippet in snippets])
 
 @app.route('/comments/<snippet_id>', methods=['POST'])
 def add_comment(snippet_id):
-    comment = request.json
-    if snippet_id not in comments:
-        comments[snippet_id] = []
-    comments[snippet_id].append(comment)
-    return jsonify(comment), 201
+    conn = db_connect()
+    comment = Comment(
+        id=None,  # ID will be generated by the database
+        snippet_id=snippet_id,
+        user_name=request.json.get('user_name'),
+        content=request.json.get('content'),
+        created_at=request.json.get('created_at')
+    )
+    comment_id = db_insert_comment(conn, comment)
+    if comment_id:
+        return jsonify({'id': comment_id, 'snippet_id': comment.snippet_id, 'user_name': comment.user_name, 'content': comment.content, 'created_at': comment.created_at}), 201
+    else:
+        return jsonify({'error': 'Failed to add comment'}), 500
 
 @app.route('/comments/<snippet_id>', methods=['GET'])
 def get_comments(snippet_id):
@@ -116,38 +142,49 @@ def get_comments(snippet_id):
         return jsonify([]), 200
     return jsonify(comments[snippet_id]), 200
 
-@app.route('/projects', methods=['POST'])
-def create_project():
-    project_id = request.json.get('id')
-    project_data = request.json
-    projects[project_id] = project_data
-    return jsonify(project_data), 201
+# @app.route('/projects', methods=['POST'])
+# def create_project():
+#     conn = db_connect()
+#     project = Project(
+#         id=request.json.get('id'),
+#         name=request.json.get('name'),
+#         description=request.json.get('description')
+#     )
+#     project_id = db_insert_project(conn, project)
+#     if project_id:
+#         return jsonify({'id': project_id, 'name': project.name, 'description': project.description}), 201
+#     else:
+#         return jsonify({'error': 'Failed to create project'}), 500
 
-@app.route('/projects/<project_id>', methods=['GET'])
-def get_project(project_id):
-    project_data = projects.get(project_id)
-    if project_data:
-        return jsonify(project_data)
-    else:
-        return jsonify({'error': 'Project not found'}), 404
+# @app.route('/projects/<project_id>', methods=['GET'])
+# def get_project(project_id):
+#     conn = db_connect()
+#     project = db_get_project_by_id(conn, project_id)
+#     if project:
+#         return jsonify({'id': project.id, 'name': project.name, 'description': project.description})
+#     else:
+#         return jsonify({'error': 'Project not found'}), 404
 
-@app.route('/projects/<project_id>', methods=['PUT'])
-def update_project(project_id):
-    if project_id in projects:
-        projects[project_id].update(request.json)
-        return jsonify(projects[project_id])
-    else:
-        return jsonify({'error': 'Project not found'}), 404
+# @app.route('/projects/<project_id>', methods=['PUT'])
+# def update_project(project_id):
+#     conn = db_connect()
+#     project = Project(
+#         id=project_id,
+#         name=request.json.get('name'),
+#         description=request.json.get('description')
+#     )
+#     db_update_project(conn, project)
+#     return jsonify({'id': project.id, 'name': project.name, 'description': project.description})
 
-@app.route('/projects/<project_id>/members', methods=['POST'])
-def add_project_member(project_id):
-    if project_id not in projects:
-        return jsonify({'error': 'Project not found'}), 404
-    member_id = request.json.get('id')
-    if 'members' not in projects[project_id]:
-        projects[project_id]['members'] = []
-    projects[project_id]['members'].append(member_id)
-    return jsonify(projects[project_id]), 201
+# @app.route('/projects/<project_id>/members', methods=['POST'])
+# def add_project_member(project_id):
+#     conn = db_connect()
+#     project_member = ProjectMember(
+#         project_id=project_id,
+#         user_id=request.json.get('id')
+#     )
+#     db_insert_project_member(conn, project_member)
+#     return jsonify({'project_id': project_id, 'user_id': project_member.user_id}), 201
 
 if __name__ == '__main__':
     app.run(debug=True)
