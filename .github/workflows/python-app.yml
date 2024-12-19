@@ -5,8 +5,7 @@ name: Python application
 
 on:
   push:
-    push:
-      branches: [ "main" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
@@ -44,3 +43,7 @@ jobs:
     - name: Start app using Docker Compose
       run: |
         docker compose up -d
+    - name: Run functional tests after app is started
+      run: |
+        sleep 10
+        pytest tests/functional_tests.py --base-url http://localhost:8000
