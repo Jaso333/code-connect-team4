@@ -1,4 +1,7 @@
-from db import User, Snippet, db_connect, db_insert_user, db_update_user, db_delete_user, db_insert_snippet, db_update_snippet, db_delete_snippet, db_get_user_by_username
+from db import User, Snippet, Comment, \
+    db_connect, db_insert_user, db_update_user, db_delete_user, db_get_user_by_username, \
+    db_insert_snippet, db_update_snippet, db_delete_snippet, \
+    db_insert_comment
 
 def test_db_insert_user():
     conn = db_connect()
@@ -56,5 +59,17 @@ def test_db_delete_snippet():
     conn = db_connect()
     try:
         db_delete_snippet(conn, 1)
+    finally:
+        conn.close()
+
+def test_db_insert_comment():
+    conn = db_connect()
+    try:
+        comment = Comment(None, 2, "test_user", "This is a test comment", "2023-10-10 10:00:00")
+        comment_id = db_insert_comment(conn, comment)
+        if comment_id:
+            print(f"Test passed: Comment inserted with ID {comment_id}")
+        else:
+            print("Test failed: Comment insertion failed")
     finally:
         conn.close()

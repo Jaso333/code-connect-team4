@@ -19,6 +19,14 @@ class Snippet:
         self.language = language
         self.user_name = user_name
 
+class Comment:
+    def __init__(self, id, snippet_id, user_name, content, created_at):
+        self.id = id
+        self.snippet_id = snippet_id
+        self.user_name = user_name
+        self.content = content
+        self.created_at = created_at
+
 def db_connect():
     return psycopg2.connect(database="team4",
         host="ghcpchmgmt.postgres.database.azure.com",
@@ -177,5 +185,23 @@ def db_filter_snippets(conn, user_name=None, tag=None, language=None):
     except Exception as e:
         print(f"Error filtering snippets: {e}")
         return []
+
+def db_insert_comment(conn, comment):
+    try:
+        with conn.cursor() as cursor:
+            insert_query = sql.SQL("""
+                INSERT INTO comments (snippet_id, user_name, content, created_at)
+                VALUES (%s, %s, %s, %s)
+                RETURNING id
+            """)
+            cursor.execute(insert_query, (comment.snippet_id, comment.user_name, comment.content, comment.created_at))
+            comment_id = cursor.fetchone()[0]
+            conn.commit()
+            print(f"Comment inserted successfully with ID: {comment_id}")
+            return comment_id
+    except Exception as e:
+        print(f"Error inserting comment: {e}")
+        conn.rollback()
+        return None
 
 
