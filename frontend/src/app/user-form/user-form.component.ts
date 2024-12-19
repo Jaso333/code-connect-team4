@@ -6,15 +6,13 @@ import { MatCardModule } from '@angular/material/card';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 export interface UserData {
-  id: number;
+  email: number;
   username: string;
   name: string;
   bio: string;
-  githubProfileUrl: string;
+  first_name: string;
   skills: string;
-  profileImageUrl: string;
-  createdAt: Date;
-  updatedAt: Date;
+  surname: string;
 }
 
 @Component({
@@ -29,18 +27,19 @@ export class UserFormComponent implements OnInit {
 
   constructor(private fb: FormBuilder, @Inject(MAT_DIALOG_DATA) public userData: UserData | null = null, public dialogRef: MatDialogRef<UserFormComponent>) {
     this.userForm = this.fb.group({
+      update: [false],
+      email: ['', Validators.email],
       username: ['', Validators.required],
-      name: ['', Validators.required],
       bio: [''],
-      githubProfileUrl: ['', Validators.required],
+      first_name: [''],
       skills: [''],
-      profileImageUrl: ['']
+      surname: ['']
     });
   }
 
   ngOnInit(): void {
     if (this.userData) {
-      this.userForm.patchValue(this.userData);
+      this.userForm.patchValue({ ...this.userData, update: true });
     }
   }
 

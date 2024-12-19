@@ -1,13 +1,14 @@
 <mat-card>
   <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+
     <mat-form-field appearance="fill">
-      <mat-label>Username</mat-label>
-      <input matInput formControlName="username" required>
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" required>
     </mat-form-field>
 
     <mat-form-field appearance="fill">
-      <mat-label>Name</mat-label>
-      <input matInput formControlName="name" required>
+      <mat-label>Username</mat-label>
+      <input matInput formControlName="username" required>
     </mat-form-field>
 
     <mat-form-field appearance="fill">
@@ -16,18 +17,18 @@
     </mat-form-field>
 
     <mat-form-field appearance="fill">
-      <mat-label>GitHub Profile URL</mat-label>
-      <input matInput formControlName="githubProfileUrl" required>
+      <mat-label>First Name</mat-label>
+      <input matInput formControlName="first_name">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Surname</mat-label>
+      <input matInput formControlName="surname">
     </mat-form-field>
 
     <mat-form-field appearance="fill">
       <mat-label>Skills</mat-label>
       <input matInput formControlName="skills">
-    </mat-form-field>
-
-    <mat-form-field appearance="fill">
-      <mat-label>Profile Image URL</mat-label>
-      <input matInput formControlName="profileImageUrl">
     </mat-form-field>
 
     <button mat-raised-button color="primary" type="submit">Submit</button>

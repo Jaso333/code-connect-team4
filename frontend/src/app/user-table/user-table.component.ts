@@ -16,7 +16,7 @@ import { UsersService } from '../users.service';
   styleUrls: ['./user-table.component.css']
 })
 export class UserTableComponent implements OnInit {
-  displayedColumns: string[] = ['id', 'username', 'name', 'bio', 'githubProfileUrl', 'skills', 'profileImageUrl', 'createdAt', 'updatedAt', 'actions'];
+  displayedColumns: string[] = ['email', 'username', 'bio', 'first_name', 'skills', 'surname', 'actions'];
   dataSource: UserData[] = [];
 
   constructor(public dialog: MatDialog, private usersService: UsersService) { }
@@ -38,8 +38,8 @@ export class UserTableComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        if (result.id) {
-          this.usersService.updateUser(result.id, result).subscribe(() => this.loadUsers());
+        if (result.update) {
+          this.usersService.updateUser(result.username, result).subscribe(() => this.loadUsers());
         } else {
           this.usersService.createUser(result).subscribe(() => this.loadUsers());
         }
@@ -49,6 +49,10 @@ export class UserTableComponent implements OnInit {
 
   public editUser(userData: UserData): void {
     this.addUser(userData);
+  }
+
+  public deleteUser(userData: UserData): void {
+    this.usersService.deleteUser(userData.username).subscribe(() => this.loadUsers());
   }
 }
 

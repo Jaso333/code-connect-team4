@@ -187,4 +187,4 @@ def get_comments(snippet_id):
 #     return jsonify({'project_id': project_id, 'user_id': project_member.user_id}), 201
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=55555)
