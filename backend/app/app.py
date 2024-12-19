@@ -205,4 +205,4 @@ def get_project_members(project_id):
     return jsonify([{'user_name': member.user_name, 'project_id': member.project_id} for member in project_members])
 
 if __name__ == '__main__':
-    app.run(debug=True, port=55555)
+    app.run(debug=True)
