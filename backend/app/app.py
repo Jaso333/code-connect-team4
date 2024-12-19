@@ -224,5 +224,25 @@ def get_project_members(conn, project_id):
     project_members = db_get_user_projects_by_project_id(conn, project_id)
     return jsonify([{'user_name': member.user_name, 'project_id': member.project_id} for member in project_members])
 
+@app.route('/clear_db', methods=['DELETE'])
+@with_db_connection
+def clear_db(conn):
+    """
+    Clear the database by deleting all records from the users, snippets, comments, and projects tables.
+
+    Returns:
+        response (flask.Response): A JSON response indicating the success of the operation.
+    """
+    try:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM users")
+        cursor.execute("DELETE FROM snippets")
+        cursor.execute("DELETE FROM comments")
+        cursor.execute("DELETE FROM projects")
+        conn.commit()
+        return jsonify({'message': 'Database cleared'}), 200
+    except Exception as e:
+        return jsonify({'error': 'Failed to clear database: ' + str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=True)
