@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-from flask import Flask, request, jsonify, send_from_directory
-=======
 from flask import Flask, request, jsonify
->>>>>>> 95771d909f08550bf54fee6b709f3bff2eeba96f
 
 app = Flask(__name__)
 
@@ -108,21 +104,17 @@ def search_snippets():
 
 @app.route('/comments/<snippet_id>', methods=['POST'])
 def add_comment(snippet_id):
-    if snippet_id not in snippets:
-        return jsonify({'error': 'Snippet not found'}), 404
-    comment_id = request.json.get('id')
-    comment_data = request.json
+    comment = request.json
     if snippet_id not in comments:
-        comments[snippet_id] = {}
-    comments[snippet_id][comment_id] = comment_data
-    return jsonify(comment_data), 201
+        comments[snippet_id] = []
+    comments[snippet_id].append(comment)
+    return jsonify(comment), 201
 
 @app.route('/comments/<snippet_id>', methods=['GET'])
 def get_comments(snippet_id):
-    if snippet_id in comments:
-        return jsonify(comments[snippet_id])
-    else:
-        return jsonify({'error': 'No comments found for this snippet'}), 404
+    if snippet_id not in comments:
+        return jsonify([]), 200
+    return jsonify(comments[snippet_id]), 200
 
 @app.route('/projects', methods=['POST'])
 def create_project():
