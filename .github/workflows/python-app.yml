@@ -5,7 +5,8 @@ name: Python application
 
 on:
   push:
-    branches: [ "main" ]
+    push:
+      branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
@@ -40,3 +41,9 @@ jobs:
     - name: Run functional tests
       run: |
         pytest tests/functional_tests.py
+    - name: Verify docker compose version
+      run: |
+        docker compose version
+    - name: Start app using Docker Compose
+      run: |
+        docker compose up -d

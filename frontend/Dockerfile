@@ -1,5 +1,5 @@
 # Use the official Node.js 14 image as the base image for the frontend build stage
-FROM node:14.17.0 as frontend
+FROM node:20 as frontend
 
 # Set the working directory inside the container to /app
 WORKDIR /app
@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install the dependencies specified in package.json
-RUN npm ci
+RUN npm install
 
 # Copy the rest of the application code to the working directory
 COPY . .
