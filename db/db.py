@@ -69,6 +69,26 @@ def db_delete_user(conn, username):
         print(f"Error deleting user: {e}")
         conn.rollback()
 
+def db_get_user_by_username(conn, username):
+    try:
+        with conn.cursor() as cursor:
+            select_query = sql.SQL("""
+                SELECT username, email, password, first_name, surname, bio, skills
+                FROM users
+                WHERE username = %s
+            """)
+            cursor.execute(select_query, (username,))
+            user_data = cursor.fetchone()
+            if user_data:
+                user = User(*user_data)
+                return user
+            else:
+                print("User not found")
+                return None
+    except Exception as e:
+        print(f"Error fetching user: {e}")
+        return None
+
 def db_insert_snippet(conn, snippet):
     try:
         with conn.cursor() as cursor:
