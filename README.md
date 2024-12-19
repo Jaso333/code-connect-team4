@@ -53,17 +53,40 @@ This is a simple Flask API application with endpoints to create, retrieve, and u
 - **Request Body:**
     ```json
     {
-        "id": "user1",
+        "id": 1,
         "name": "John Doe",
-        "email": "john.doe@example.com"
+        "bio": "A software developer with 10 years of experience.",
+        "skills": ["Python", "Flask", "JavaScript"],
+        "profile_picture": "http://example.com/profile.jpg",
+        "github_gitlab": "http://github.com/johndoe"
     }
     ```
 - **Response:**
     ```json
     {
-        "id": "user1",
+        "id": 1,
         "name": "John Doe",
-        "email": "john.doe@example.com"
+        "bio": "A software developer with 10 years of experience.",
+        "skills": ["Python", "Flask", "JavaScript"],
+        "profile_picture": "http://example.com/profile.jpg",
+        "github_gitlab": "http://github.com/johndoe"
+    }
+    ```
+
+### Retrieve all users
+
+- **URL:** `/users`
+- **Method:** `GET`
+- **Response:**
+    ```json
+    {
+        "1": {
+            "name": "John Doe",
+            "bio": "A software developer with 10 years of experience.",
+            "skills": ["Python", "Flask", "JavaScript"],
+            "profile_picture": "http://example.com/profile.jpg",
+            "github_gitlab": "http://github.com/johndoe"
+        }
     }
     ```
 
@@ -74,9 +97,11 @@ This is a simple Flask API application with endpoints to create, retrieve, and u
 - **Response:**
     ```json
     {
-        "id": "user1",
         "name": "John Doe",
-        "email": "john.doe@example.com"
+        "bio": "A software developer with 10 years of experience.",
+        "skills": ["Python", "Flask", "JavaScript"],
+        "profile_picture": "http://example.com/profile.jpg",
+        "github_gitlab": "http://github.com/johndoe"
     }
     ```
 
@@ -93,8 +118,34 @@ This is a simple Flask API application with endpoints to create, retrieve, and u
 - **Response:**
     ```json
     {
-        "id": "user1",
         "name": "John Smith",
-        "email": "john.doe@example.com"
+        "bio": "A software developer with 10 years of experience.",
+        "skills": ["Python", "Flask", "JavaScript"],
+        "profile_picture": "http://example.com/profile.jpg",
+        "github_gitlab": "http://github.com/johndoe"
     }
     ```
+
+### Create an example user
+
+- **URL:** `/example_user`
+- **Method:** `GET`
+- **Response:**
+    ```json
+    {
+        "id": 1,
+        "name": "John Doe",
+        "bio": "A software developer with 10 years of experience.",
+        "skills": ["Python", "Flask", "JavaScript"],
+        "profile_picture": "http://example.com/profile.jpg",
+        "github_gitlab": "http://github.com/johndoe"
+    }
+    ```
+
+## API Documentation
+
+Swagger UI is available at `http://127.0.0.1:5000/swagger`.
+
+## Example curl commands
+
+### Create a new user
