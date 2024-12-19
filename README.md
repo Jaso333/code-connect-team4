@@ -39,7 +39,7 @@ This is a simple Flask API application with endpoints to create, retrieve, and u
 
 1. Start the Flask application:
     ```sh
-    python app.py
+    python app/app.py
     ```
 
 2. The application will be running at `http://127.0.0.1:5000/`.
