@@ -39,4 +39,4 @@ jobs:
         pytest
     - name: Start app using Docker Compose
       run: |
-      docker-compose up -d
+        docker-compose up -d
