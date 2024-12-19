@@ -1,7 +1,9 @@
-from db import User, Snippet, Comment, \
+from db import User, Snippet, Comment, Project, UserProject, \
     db_connect, db_insert_user, db_update_user, db_delete_user, db_get_user_by_username, \
     db_insert_snippet, db_update_snippet, db_delete_snippet, \
-    db_insert_comment, db_update_comment, db_delete_comment, db_get_comments_by_snippet_id
+    db_insert_comment, db_update_comment, db_delete_comment, db_get_comments_by_snippet_id, \
+    db_insert_project, db_update_project, db_delete_project, \
+    db_insert_user_project, db_delete_user_project, db_get_user_projects_by_project_id
 
 def test_db_insert_user():
     conn = db_connect()
@@ -99,5 +101,60 @@ def test_db_get_comments_by_snippet_id():
                 print(f"Comment ID: {comment.id}, Content: {comment.content}")
         else:
             print("Test failed: No comments found")
+    finally:
+        conn.close()
+
+def test_db_insert_project():
+    conn = db_connect()
+    try:
+        project = Project(None, "Test Project", "This is a test project")
+        project_id = db_insert_project(conn, project)
+        if project_id:
+            print(f"Test passed: Project inserted with ID {project_id}")
+        else:
+            print("Test failed: Project insertion failed")
+    finally:
+        conn.close()
+
+def test_db_update_project():
+    conn = db_connect()
+    try:
+        project = Project(1, "Updated Test Project", "This is an updated test project")
+        db_update_project(conn, project)
+    finally:
+        conn.close()
+
+def test_db_delete_project():
+    conn = db_connect()
+    try:
+        db_delete_project(conn, 1)
+    finally:
+        conn.close()
+
+def test_db_insert_user_project():
+    conn = db_connect()
+    try:
+        user_project = UserProject("foo_bar", 1)
+        db_insert_user_project(conn, user_project)
+    finally:
+        conn.close()
+
+def test_db_delete_user_project():
+    conn = db_connect()
+    try:
+        db_delete_user_project(conn, "foo_bar", 1)
+    finally:
+        conn.close()
+
+def test_db_get_user_projects_by_project_id():
+    conn = db_connect()
+    try:
+        user_projects = db_get_user_projects_by_project_id(conn, 1)
+        if user_projects:
+            print(f"Test passed: {len(user_projects)} user projects found")
+            for user_project in user_projects:
+                print(f"User: {user_project.user_name}, Project ID: {user_project.project_id}")
+        else:
+            print("Test failed: No user projects found")
     finally:
         conn.close()
