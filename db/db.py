@@ -32,8 +32,32 @@ def db_insert_user(conn, user):
         print(f"Error inserting user: {e}")
         conn.rollback()
 
-# Example usage:
-# conn = psycopg2.connect("dbname=test user=postgres password=secret")
-# user = User('john_doe', 'john@example.com', 'securepassword', 'John', 'Doe', 'Bio of John', 'Python,SQL')
-# insert_user(conn, user)
-# conn.close()
+def db_update_user(conn, user):
+    try:
+        with conn.cursor() as cursor:
+            update_query = sql.SQL("""
+                UPDATE users
+                SET email = %s, password = %s, first_name = %s, surname = %s, bio = %s, skills = %s
+                WHERE username = %s
+            """)
+            cursor.execute(update_query, (user.email, user.password, user.first_name, user.surname, user.bio, user.skills, user.username))
+            conn.commit()
+            print("User updated successfully")
+    except Exception as e:
+        print(f"Error updating user: {e}")
+        conn.rollback()
+
+def db_delete_user(conn, username):
+    try:
+        with conn.cursor() as cursor:
+            delete_query = sql.SQL("""
+                DELETE FROM users
+                WHERE username = %s
+            """)
+            cursor.execute(delete_query, (username,))
+            conn.commit()
+            print("User deleted successfully")
+    except Exception as e:
+        print(f"Error deleting user: {e}")
+        conn.rollback()
+
