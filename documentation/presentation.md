@@ -41,21 +41,41 @@ Implement CodeConnect to provide a centralized platform for code sharing, versio
 
 To assess this, all the below should be 'YES'.
 
-| Capability | Description | Functional? |
+| Measure | Description | Functional? |
 | Create profiles | Including basic information (name, bio, skills), profile picture, and links to GitHub/GitLab profiles. | TBC |
 | Post code snippets | Share code in various languages with syntax highlighting, titles, descriptions, and tags for categorization | TBC |
 | Comment and discuss | Engage in conversations on code snippets, ask questions, provide feedback, and share insights | TBC |
 | Collaborate on projects | Create or join project groups, share code repositories, assign tasks, and track progress. | TBC |
 | Search and discover | Find relevant code snippets, projects, and users based on keywords, tags, and programming languages. | TBC |
 
-
 ### Code Quality: Is the code well-structured, readable, and efficient?
+
+| Measure | Description | Functional? |
+| Standard implementation | Have we followed a simple, standard format? | TBC |
+| Code commentary | Are comments present and clear, with a consistent standard across files. | TBC |
+| Variable naming convention | Is the naming convention consistent and to PEP8 standard. | TBC |
+| Efficiency | Is code dry? | TBC |
 
 ### Copilot Utilization: How effectively did the team leverage Copilot throughout the development process?
 
+| Measure | Description | Functional? |
+| Copilot Use - DB | Are we using CoPilot to do the heavily lifting? | TBC |
+| Copilot Use - API | Are we using CoPilot to do the heavily lifting? | TBC |
+| Copilot Use - Front End | Are we using CoPilot to do the heavily lifting? | TBC |
+| Copilot Use - Tests | Are we using CoPilot to do the heavily lifting? | TBC |
+| Copilot Use - Documentation | Are we using CoPilot to do the heavily lifting? | TBC |
+
 ### Testing and Documentation: Are the unit tests comprehensive and the documentation clear and informative?
 
+| Measure | Description | Functional? |
+| Functional Coverage | Do we have a test set for all key capabilities? | TBC |
+| Unit Coverage | Do we have a full set of unit tests? | TBC |
+
 ### Containerization(optional): Is the Dockerfile correctly configured for deployment?
+
+| Measure | Description | Functional? |
+| File made | Is the docker file created | TBC |
+| File tested | Is the docker file proven to be working? | TBC |
 
 ## Conclusion
 CodeConnect offers a robust solution to improve code sharing and collaboration, ultimately enhancing productivity and project delivery within our organization.
