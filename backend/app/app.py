@@ -3,7 +3,7 @@ from flask_cors import CORS  # Import CORS
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from db.db import db_connect, db_insert_user, db_update_user, db_delete_user, db_get_user_by_username, db_insert_snippet, db_update_snippet, db_delete_snippet, db_get_snippet_by_id, db_filter_snippets, db_insert_comment, db_get_comments_by_snippet_id, db_insert_project, db_get_project_by_id, db_update_project, db_insert_user_project, db_get_all_comments, db_get_all_projects, User, Comment, Snippet, Project, UserProject
+from db.db import db_connect, db_insert_user, db_update_user, db_delete_user, db_get_user_by_username, db_insert_snippet, db_update_snippet, db_delete_snippet, db_get_snippet_by_id, db_filter_snippets, db_insert_comment, db_get_comments_by_snippet_id, db_insert_project, db_get_project_by_id, db_update_project, db_insert_user_project, db_get_all_comments, db_get_all_projects, db_get_user_projects_by_project_id, User, Comment, Snippet, Project, UserProject
 app = Flask(__name__)
 CORS(app)  # Enable CORS
 
@@ -197,6 +197,12 @@ def add_project_member(project_id):
     )
     db_insert_user_project(conn, project_member)
     return jsonify({'project_id': project_id, 'user_name': project_member.user_name}), 201
+
+@app.route('/projects/<project_id>/members', methods=['GET'])
+def get_project_members(project_id):
+    conn = db_connect()
+    project_members = db_get_user_projects_by_project_id(conn, project_id)
+    return jsonify([{'user_name': member.user_name, 'project_id': member.project_id} for member in project_members])
 
 if __name__ == '__main__':
     app.run(debug=True)
