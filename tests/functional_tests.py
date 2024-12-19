@@ -1,7 +1,8 @@
+import os
 import pytest
 import requests
 
-BASE_URL = 'http://localhost:5000'
+BASE_URL = os.getenv('BASE_URL', 'http://localhost:5000')
 
 @pytest.fixture(scope='module')
 def create_user():
