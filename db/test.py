@@ -1,4 +1,4 @@
-from db import User, Snippet, db_connect, db_insert_user, db_update_user, db_delete_user, db_insert_snippet, db_update_snippet, db_delete_snippet
+from db import User, Snippet, db_connect, db_insert_user, db_update_user, db_delete_user, db_insert_snippet, db_update_snippet, db_delete_snippet, db_get_user_by_username
 
 def test_db_insert_user():
     conn = db_connect()
@@ -20,6 +20,17 @@ def test_db_delete_user():
     conn = db_connect()
     try:
         db_delete_user(conn, "foo_bar")
+    finally:
+        conn.close()
+
+def test_db_get_user_by_username():
+    conn = db_connect()
+    try:
+        user = db_get_user_by_username(conn, "foo_bar")
+        if user:
+            print(f"Test passed: User found - {user.username}, {user.email}")
+        else:
+            print("Test failed: User not found")
     finally:
         conn.close()
 
