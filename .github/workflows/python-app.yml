@@ -38,6 +38,9 @@ jobs:
     - name: Test with pytest
       run: |
         pytest
+    - name: Verify docker compose version
+      run: |
+        docker compose version
     - name: Start app using Docker Compose
       run: |
         docker-compose up -d
