@@ -5,7 +5,7 @@ name: Python application
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main" , "dockerfile"]
   pull_request:
     branches: [ "main" ]
 
@@ -38,5 +38,8 @@ jobs:
       run: |
         pytest
     - name: Start app using Docker Compose
+  run:
+    runs-on: ubuntu-latest
+    steps:
       run: |
         docker-compose up -d
