@@ -136,4 +136,46 @@ def db_delete_snippet(conn, snippet_id):
         print(f"Error deleting snippet: {e}")
         conn.rollback()
 
+def db_get_snippet_by_id(conn, snippet_id):
+    try:
+        with conn.cursor() as cursor:
+            select_query = sql.SQL("""
+                SELECT id, code, tags, language, user_name
+                FROM snippets
+                WHERE id = %s
+            """)
+            cursor.execute(select_query, (snippet_id,))
+            snippet_data = cursor.fetchone()
+            if snippet_data:
+                snippet = Snippet(*snippet_data)
+                return snippet
+            else:
+                print("Snippet not found")
+                return None
+    except Exception as e:
+        print(f"Error fetching snippet: {e}")
+        return None
+
+def db_filter_snippets(conn, user_name=None, tag=None, language=None):
+    try:
+        with conn.cursor() as cursor:
+            query = sql.SQL("SELECT id, code, tags, language, user_name FROM snippets WHERE 1=1")
+            params = []
+            if user_name:
+                query += sql.SQL(" AND user_name = %s")
+                params.append(user_name)
+            if tag:
+                query += sql.SQL(" AND tags LIKE %s")
+                params.append(f"%{tag}%")
+            if language:
+                query += sql.SQL(" AND language = %s")
+                params.append(language)
+            
+            cursor.execute(query, params)
+            snippets = cursor.fetchall()
+            return [Snippet(*snippet) for snippet in snippets]
+    except Exception as e:
+        print(f"Error filtering snippets: {e}")
+        return []
+
 
