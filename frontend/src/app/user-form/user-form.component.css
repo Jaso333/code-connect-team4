@@ -1,0 +1,15 @@
+:host {
+  display: block;
+  padding: 30px;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Adds space between the form fields */
+  padding: 16px; /* Adds padding inside the form container */
+}
+
+mat-form-field {
+  width: 100%;
+}

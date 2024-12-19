@@ -1,0 +1,35 @@
+<mat-card>
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="fill">
+      <mat-label>Username</mat-label>
+      <input matInput formControlName="username" required>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" required>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Bio</mat-label>
+      <textarea matInput formControlName="bio"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>GitHub Profile URL</mat-label>
+      <input matInput formControlName="githubProfileUrl" required>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Skills</mat-label>
+      <input matInput formControlName="skills">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Profile Image URL</mat-label>
+      <input matInput formControlName="profileImageUrl">
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit">Submit</button>
+  </form>
+</mat-card>
