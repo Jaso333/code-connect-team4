@@ -1,5 +1,5 @@
 # Use the official Node.js 14 image as the base image for the frontend build stage
-FROM node:14.17.0 as frontend
+FROM node:14.20.0 as frontend
 
 # Set the working directory inside the container to /app
 WORKDIR /app
